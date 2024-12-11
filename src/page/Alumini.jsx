@@ -7,6 +7,7 @@ const Alumini = () => {
   const [membership, setMembership] = useState([]);
   const [educationalQualification, setEducationalQualification] = useState("");
   const [scoutingQualification, setScoutingQualification] = useState("");
+
   const [correspondenceAddress, setCorrespondenceAddress] = useState({
     home: "",
     street: "",
@@ -43,8 +44,10 @@ const Alumini = () => {
   const [unit, setunit] = useState(false);
   const [selectedAward, setSelectedAward] = useState("");
   const [customAwardName, setCustomAwardName] = useState("");
-  const [customAwardYear, setCustomAwardYear] = useState("");
   const [receivedAwards, setReceivedAwards] = useState([]);
+  const [showYearInput, setShowYearInput] = useState({});
+  const [customAwardYears, setCustomAwardYears] = useState({}); 
+
   const awardOptions = [
     "GOLDEN ARROW",
     "RASHTRAPATI SCOUT/GUIDE",
@@ -52,22 +55,37 @@ const Alumini = () => {
     "Other",
   ];
 
+  const handleCheckboxChange = (award) => {
+    if (receivedAwards.some((a) => a.award === award)) {
+      setReceivedAwards(receivedAwards.filter((a) => a.award !== award));
+      setShowYearInput((prev) => ({ ...prev, [award]: false }));
+      setCustomAwardYears((prev) => ({ ...prev, [award]: "" }));
+    } else {
+      setReceivedAwards([...receivedAwards, { award }]);
+      if (award !== "Other") {
+        setShowYearInput((prev) => ({ ...prev, [award]: true })); 
+      }
+    }
+  };
+
   const handleAddAward = () => {
-    if (selectedAward === "Other" && customAwardName && customAwardYear) {
+    if (customAwardName && customAwardYears["Other"]) {
       setReceivedAwards([
         ...receivedAwards,
-        { award: customAwardName, year: customAwardYear },
+        { award: customAwardName, year: customAwardYears["Other"] },
       ]);
       setCustomAwardName("");
-      setCustomAwardYear("");
-    } else if (selectedAward && selectedAward !== "Other" && customAwardYear) {
-      setReceivedAwards([
-        ...receivedAwards,
-        { award: selectedAward, year: customAwardYear },
-      ]);
-      setCustomAwardYear("");
+      setCustomAwardYears((prev) => ({ ...prev, Other: "" })); 
+    } else {
+      receivedAwards.forEach((award) => {
+        if (customAwardYears[award.award]) {
+          setReceivedAwards((prev) => [
+            ...prev,
+            { award: award.award, year: customAwardYears[award.award] },
+          ]);
+        }
+      });
     }
-    setSelectedAward("");
   };
 
   const handleRemoveAward = (index) => {
@@ -400,48 +418,53 @@ const Alumini = () => {
             </label>
             <div className="space-y-4">
               {awardOptions.map((award, index) => (
-                <div key={index}>
+                <div key={index} className="flex items-center">
                   <input
-                    type="radio"
+                    type="checkbox"
                     value={award}
-                    checked={selectedAward === award}
-                    onChange={(e) => {
-                      setSelectedAward(e.target.value);
-                      if (e.target.value !== "Other") {
-                        setCustomAwardName("");
-                        setCustomAwardYear("");
-                      }
-                    }}
+                    checked={receivedAwards.some((a) => a.award === award)}
+                    onChange={() => handleCheckboxChange(award)}
                   />
-                  {award}
-                  {selectedAward === award && selectedAward !== "Other" && (
-                    <input
-                      type="text"
-                      placeholder="Enter year"
-                      value={customAwardYear}
-                      onChange={(e) => setCustomAwardYear(e.target.value)}
-                      className="ml-2 border border-gray-300 bg-white  bg-opacity-60 rounded-md p-1"
-                    />
-                  )}
+                  <span className="ml-2">{award}</span>
+                  {showYearInput[award] &&
+                    award !== "Other" && ( 
+                      <input
+                        type="text"
+                        placeholder="Enter year"
+                        value={customAwardYears[award] || ""}
+                        onChange={(e) =>
+                          setCustomAwardYears((prev) => ({
+                            ...prev,
+                            [award]: e.target.value,
+                          }))
+                        }
+                        className="ml-2 border border-gray-300 bg-white bg-opacity-60 rounded-md p-1"
+                      />
+                    )}
                 </div>
               ))}
-              {selectedAward === "Other" && (
+              {receivedAwards.some((a) => a.award === "Other") && (
                 <div>
                   <input
                     type="text"
                     placeholder="Enter award name"
                     value={customAwardName}
                     onChange={(e) => setCustomAwardName(e.target.value)}
-                    className="w-full border border-gray-300 rounded-md bg-white  bg-opacity-60  p-3 mb-2"
+                    className="w-full border border-gray-300 rounded-md bg-white bg-opacity-60 p-3 mb-2"
                   />
                   <input
                     type="text"
                     placeholder="Enter year"
-                    value={customAwardYear}
-                    onChange={(e) => setCustomAwardYear(e.target.value)}
-                    className="w-full border bg-white  bg-opacity-60 border-gray-300 rounded-md p-3 mb-2"
+                    value={customAwardYears["Other"] || ""}
+                    onChange={(e) =>
+                      setCustomAwardYears((prev) => ({
+                        ...prev,
+                        Other: e.target.value,
+                      }))
+                    }
+                    className="w-full border bg-white bg-opacity-60 border-gray-300 rounded-md p-3 mb-2"
                   />
-                  {customAwardName && customAwardYear && (
+                  {customAwardName && customAwardYears["Other"] && (
                     <button
                       type="button"
                       onClick={handleAddAward}
@@ -453,20 +476,6 @@ const Alumini = () => {
                 </div>
               )}
             </div>
-            <ul className="mt-4 pl-6">
-              {receivedAwards.map((award, index) => (
-                <li key={index}>
-                  {award.award} {award.year}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveAward(index)}
-                    className="bg-red-500 text-white px-2 py-1 rounded-md ml-2"
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
           </div>
           <div>
             <label className="block font-semibold text-gray-700 mb-2">
