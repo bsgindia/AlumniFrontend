@@ -62,21 +62,23 @@ const Alumini = () => {
       setCustomAwardYears((prev) => ({ ...prev, [award]: "" }));
     } else {
       setReceivedAwards([...receivedAwards, { award }]);
-      if (award !== "Other") {
+      if (["GOLDEN ARROW", "RASHTRAPATI SCOUT/GUIDE"].includes(award)) {
         setShowYearInput((prev) => ({ ...prev, [award]: true })); 
       }
     }
   };
-
+  
   const handleAddAward = () => {
+    // Check if the custom award name and year for "Other" are provided
     if (customAwardName && customAwardYears["Other"]) {
-      setReceivedAwards([
-        ...receivedAwards,
+      setReceivedAwards((prev) => [
+        ...prev,
         { award: customAwardName, year: customAwardYears["Other"] },
       ]);
-      setCustomAwardName("");
-      setCustomAwardYears((prev) => ({ ...prev, Other: "" })); 
+      setCustomAwardName(""); // Reset the custom award name
+      setCustomAwardYears((prev) => ({ ...prev, Other: "" })); // Reset the year for "Other"
     } else {
+      // Add existing awards with their years
       receivedAwards.forEach((award) => {
         if (customAwardYears[award.award]) {
           setReceivedAwards((prev) => [
@@ -87,18 +89,16 @@ const Alumini = () => {
       });
     }
   };
-
-  const handleRemoveAward = (index) => {
-    const updatedAwards = receivedAwards.filter((_, idx) => idx !== index);
-    setReceivedAwards(updatedAwards);
-  };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = {
       name,
       membership,
-      receivedAwards,
+      receivedAwards: receivedAwards.map((award) => ({
+        award: award.award,
+        year: customAwardYears[award.award] || "", 
+      })),
       educationalQualification,
       scoutingQualification,
       correspondenceAddress,
@@ -136,7 +136,6 @@ const Alumini = () => {
       });
     }
   };
-
   const resetForm = () => {
     setName("");
     setMembership([]);
@@ -413,7 +412,7 @@ const Alumini = () => {
           </div>
           <div>
             <label className="block font-semibold text-gray-700 mb-2">
-              Have you received any specific award?{" "}
+              Have you received any specific award?
               <span className="text-red-500">*</span>
             </label>
             <div className="space-y-4">
