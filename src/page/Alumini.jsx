@@ -46,7 +46,7 @@ const Alumini = () => {
   const [customAwardName, setCustomAwardName] = useState("");
   const [receivedAwards, setReceivedAwards] = useState([]);
   const [showYearInput, setShowYearInput] = useState({});
-  const [customAwardYears, setCustomAwardYears] = useState({});
+  const [customAwardYears, setCustomAwardYears] = useState({}); 
 
   const awardOptions = [
     "GOLDEN ARROW",
@@ -63,11 +63,11 @@ const Alumini = () => {
     } else {
       setReceivedAwards([...receivedAwards, { award }]);
       if (["GOLDEN ARROW", "RASHTRAPATI SCOUT/GUIDE"].includes(award)) {
-        setShowYearInput((prev) => ({ ...prev, [award]: true }));
+        setShowYearInput((prev) => ({ ...prev, [award]: true })); 
       }
     }
   };
-
+  
   const handleAddAward = () => {
     // Check if the custom award name and year for "Other" are provided
     if (customAwardName && customAwardYears["Other"]) {
@@ -89,7 +89,7 @@ const Alumini = () => {
       });
     }
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = {
@@ -97,7 +97,7 @@ const Alumini = () => {
       membership,
       receivedAwards: receivedAwards.map((award) => ({
         award: award.award,
-        year: customAwardYears[award.award] || "",
+        year: customAwardYears[award.award] || "", 
       })),
       educationalQualification,
       scoutingQualification,
@@ -425,20 +425,21 @@ const Alumini = () => {
                     onChange={() => handleCheckboxChange(award)}
                   />
                   <span className="ml-2">{award}</span>
-                  {showYearInput[award] && award !== "Other" && (
-                    <input
-                      type="text"
-                      placeholder="Enter year"
-                      value={customAwardYears[award] || ""}
-                      onChange={(e) =>
-                        setCustomAwardYears((prev) => ({
-                          ...prev,
-                          [award]: e.target.value,
-                        }))
-                      }
-                      className="ml-2 border border-gray-300 bg-white bg-opacity-60 rounded-md p-1"
-                    />
-                  )}
+                  {showYearInput[award] &&
+                    award !== "Other" && ( 
+                      <input
+                        type="text"
+                        placeholder="Enter year"
+                        value={customAwardYears[award] || ""}
+                        onChange={(e) =>
+                          setCustomAwardYears((prev) => ({
+                            ...prev,
+                            [award]: e.target.value,
+                          }))
+                        }
+                        className="ml-2 border border-gray-300 bg-white bg-opacity-60 rounded-md p-1"
+                      />
+                    )}
                 </div>
               ))}
               {receivedAwards.some((a) => a.award === "Other") && (
@@ -462,6 +463,15 @@ const Alumini = () => {
                     }
                     className="w-full border bg-white bg-opacity-60 border-gray-300 rounded-md p-3 mb-2"
                   />
+                  {customAwardName && customAwardYears["Other"] && (
+                    <button
+                      type="button"
+                      onClick={handleAddAward}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-md mt-2"
+                    >
+                      Add Award
+                    </button>
+                  )}
                 </div>
               )}
             </div>
