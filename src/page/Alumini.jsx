@@ -69,16 +69,14 @@ const Alumini = () => {
   };
   
   const handleAddAward = () => {
-    // Check if the custom award name and year for "Other" are provided
     if (customAwardName && customAwardYears["Other"]) {
       setReceivedAwards((prev) => [
         ...prev,
         { award: customAwardName, year: customAwardYears["Other"] },
       ]);
-      setCustomAwardName(""); // Reset the custom award name
-      setCustomAwardYears((prev) => ({ ...prev, Other: "" })); // Reset the year for "Other"
+      setCustomAwardName("");
+      setCustomAwardYears((prev) => ({ ...prev, Other: "" }));
     } else {
-      // Add existing awards with their years
       receivedAwards.forEach((award) => {
         if (customAwardYears[award.award]) {
           setReceivedAwards((prev) => [
@@ -89,7 +87,6 @@ const Alumini = () => {
       });
     }
   };
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = {
@@ -118,7 +115,7 @@ const Alumini = () => {
     };
     console.log(data);
     try {
-      await Axios.post("https://bw-formalu.bsgindia.tech/api/alumni", data);
+      await Axios.post("http://localhost:4000/api/alumni", data);
       Swal.fire({
         icon: "success",
         title: "Success",
@@ -176,7 +173,7 @@ const Alumini = () => {
     setUpdate(false);
     setSelectedAward("");
     setCustomAwardName("");
-    setCustomAwardYear("");
+    setCustomAwardYears({});
     setReceivedAwards([]);
   };
 
@@ -371,7 +368,6 @@ const Alumini = () => {
               onChange={(e) => setBsguid(e.target.value)}
               className="w-full border border-gray-300 bg-white  bg-opacity-60 rounded-md p-3"
               placeholder="Enter your BSGUID"
-              required
             />
           </div>
           <div>
