@@ -62,7 +62,7 @@ const Alumini = () => {
       setCustomAwardYears((prev) => ({ ...prev, [award]: "" }));
     } else {
       setReceivedAwards([...receivedAwards, { award }]);
-      if (["GOLDEN ARROW", "RASHTRAPATI SCOUT/GUIDE"].includes(award)) {
+      if (["GOLDEN ARROW", "RASHTRAPATI SCOUT/GUIDE","RASHTRAPATI ROVER/RANGER"].includes(award)) {
         setShowYearInput((prev) => ({ ...prev, [award]: true })); 
       }
     }
@@ -92,10 +92,19 @@ const Alumini = () => {
     const data = {
       name,
       membership,
-      receivedAwards: receivedAwards.map((award) => ({
-        award: award.award,
-        year: customAwardYears[award.award] || "", 
-      })),
+      receivedAwards: receivedAwards.map((award) => {
+        if (award.award === "Other") {
+          return {
+            award: customAwardName,
+            year: customAwardYears["Other"] || "",
+          };
+        } else {
+          return {
+            award: award.award,
+            year: customAwardYears[award.award] || "",
+          };
+        }
+      }),
       educationalQualification,
       scoutingQualification,
       correspondenceAddress,
@@ -324,7 +333,7 @@ const Alumini = () => {
               <label className="block font-semibold text-gray-700 mb-2">
                 Email ID <span className="text-red-500">*</span>
               </label>
-              <input
+              <input  
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -459,15 +468,7 @@ const Alumini = () => {
                     }
                     className="w-full border bg-white bg-opacity-60 border-gray-300 rounded-md p-3 mb-2"
                   />
-                  {customAwardName && customAwardYears["Other"] && (
-                    <button
-                      type="button"
-                      onClick={handleAddAward}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-md mt-2"
-                    >
-                      Add Award
-                    </button>
-                  )}
+                 
                 </div>
               )}
             </div>
