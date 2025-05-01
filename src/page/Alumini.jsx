@@ -132,7 +132,7 @@ const Alumini = () => {
         confirmButtonText: "OK",
       });
       resetForm();
-        await Axios.post("http://localhost:4000/api/alumni", data);
+        await Axios.post("https://bw-form-alumni.bsgindia.org/api/alumni", data);
         Swal.fire({
             icon: "success",
             title: "Success",
