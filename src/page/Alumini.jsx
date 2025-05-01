@@ -90,37 +90,37 @@ const Alumini = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = {
-      name,
-      membership,
-      receivedAwards: receivedAwards.map((award) => {
-        if (award.award === "Other") {
-          return {
-            award: customAwardName,
-            year: customAwardYears["Other"] || "",
-          };
-        } else {
-          return {
-            award: award.award,
-            year: customAwardYears[award.award] || "",
-          };
-        }
-      }),
-      educationalQualification,
-      scoutingQualification,
-      correspondenceAddress,
-      state,
-      permanentAddress,
-      occupation,
-      aadharNumber,
-      email,
-      phone,
-      whatsapp,
-      dob,
-      howCanHelp,
-      bsguid,
-      update: update ? "yes" : "no",
-      coreTeamInterest: wantsToJoinCoreTeam ? "yes" : "no",
-      coreUnit: unit ? "yes" : "no",
+        name,
+        membership,
+        receivedAwards: receivedAwards.map((award) => {
+            if (award.award === "Other") {
+                return {
+                    award: customAwardName,
+                    year: customAwardYears["Other"] || "",
+                };
+            } else {
+                return {
+                    award: award.award,
+                    year: customAwardYears[award.award] || "",
+                };
+            }
+        }),
+        educationalQualification,
+        scoutingQualification,
+        correspondenceAddress,
+        state,
+        permanentAddress,
+        occupation,
+        aadharNumber,
+        email,
+        phone,
+        whatsapp,
+        dob,
+        howCanHelp,
+        bsguid,
+        update: update ? "yes" : "no",
+        coreTeamInterest: wantsToJoinCoreTeam ? "yes" : "no",
+        coreUnit: unit ? "yes" : "no",
     };
     console.log(data);
     try {
@@ -132,16 +132,33 @@ const Alumini = () => {
         confirmButtonText: "OK",
       });
       resetForm();
+        await Axios.post("http://localhost:4000/api/alumni", data);
+        Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Your data has been submitted successfully!",
+            confirmButtonText: "OK",
+        });
+        resetForm();
     } catch (error) {
-      console.error("Error submitting data:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Submission Failed",
-        text: "There was an error submitting your data. Please try again.",
-        confirmButtonText: "OK",
-      });
+        console.error("Error submitting data:", error);
+        if (error.response && error.response.status === 400) {
+            Swal.fire({
+                icon: "info",
+                title: "Your form has already been submitted.",
+              
+                confirmButtonText: "OK",
+            });
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Submission Failed",
+                text: "There was an error submitting your data. Please try again.",
+                confirmButtonText: "OK",
+            });
+        }
     }
-  };
+};
   const resetForm = () => {
     setName("");
     setMembership([]);
@@ -871,7 +888,7 @@ const Alumini = () => {
               type="checkbox"
               checked={update}
               onChange={handleUpdateChange}
-              className="mr-2"
+              className="mr-2"  
             />
             <label className="text-gray-700 font-semibold">
               Do you want to receive regular updates from BSG?
